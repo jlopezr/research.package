@@ -52,34 +52,57 @@ class _RPUIVisualConsentStep extends State<RPUIVisualConsentStep> with SingleTic
     );
   }
 
-  IconData _iconDataForType(RPConsentSectionType sectionType) {
-    switch (sectionType) {
+  Widget _illustrationForType(RPConsentSection section) {
+    double iconSize = 80.0;
+    
+    switch (section.type) {
       case RPConsentSectionType.Overview:
         return null;
         break;
       case RPConsentSectionType.DataUse:
-        return Icons.search;
+        return Icon(
+          Icons.search,
+          size: iconSize,
+        );
         break;
       case RPConsentSectionType.TimeCommitment:
-        return Icons.access_time;
+        return Icon(
+          Icons.access_time,
+          size: iconSize,
+        );
         break;
       case RPConsentSectionType.StudySurvey:
-        return Icons.format_list_bulleted;
+        return Icon(
+          Icons.format_list_bulleted,
+          size: iconSize,
+        );
         break;
       case RPConsentSectionType.Withdrawing:
-        return Icons.cancel;
+        return Icon(
+          Icons.cancel,
+          size: iconSize,
+        );
         break;
       case RPConsentSectionType.Custom:
-        return null; //Icons.extension;
+        return section.customIllustration;
         break;
       case RPConsentSectionType.DataGathering:
-        return Icons.timeline;
+        return Icon(
+          Icons.timeline,
+          size: iconSize,
+        );
         break;
       case RPConsentSectionType.Privacy:
-        return Icons.lock_outline;
+        return Icon(
+          Icons.lock_outline,
+          size: iconSize,
+        );
         break;
       case RPConsentSectionType.StudyTasks:
-        return Icons.check_circle_outline;
+        return Icon(
+          Icons.check_circle_outline,
+          size: iconSize,
+        );
         break;
       default:
         return null;
@@ -88,6 +111,11 @@ class _RPUIVisualConsentStep extends State<RPUIVisualConsentStep> with SingleTic
 
   Widget _consentSectionPageBuilder(BuildContext context, int index) {
     RPConsentSection section = widget.consentDocument.sections[index];
+    if (section.title == null) {
+      throw Exception(
+          "No title has been found for the Consent Section. Probably a Custom Section was attempted to instantiate without providing the title text");
+    }
+
     return Container(
       padding: EdgeInsets.all(10.0),
       //color: Colors.white,
@@ -103,17 +131,17 @@ class _RPUIVisualConsentStep extends State<RPUIVisualConsentStep> with SingleTic
             ),
             ScaleTransition(
               scale: _scale,
-              child: Icon(
-                _iconDataForType(section.type),
-                size: 80.0,
-              ),
+              child: _illustrationForType(section),
             ),
             Column(
               children: <Widget>[
-                Text(
-                  section.summary,
-                  style: RPStyles.h2,
-                  textAlign: TextAlign.center,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    section.summary,
+                    style: RPStyles.h3,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
                 FlatButton(
                   textTheme: ButtonTextTheme.accent,
@@ -241,7 +269,7 @@ class _ContentRoute extends StatelessWidget {
       ),
       body: Container(
         padding: EdgeInsets.all(15.0),
-        child: Text(this.content),
+        child: SingleChildScrollView(child: Text(this.content)),
       ),
     );
   }
